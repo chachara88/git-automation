@@ -1,8 +1,8 @@
 #!/bin/bash
 
 # Check if the user provided the branch name and commit message as arguments
-if [ "$#" -ne 2 ]; then
-  echo "Usage: $0 <branch_name> <commit_message>"
+if [ "$#" -ne 3 ]; then
+  echo "Usage: $0 <branch_name> <commit_message> <github_path>"
   exit 1
 fi
 
@@ -19,9 +19,20 @@ check_changes() {
 
 # Function to add changes, commit and push
 commit_and_push() {
-  git add .
-  git commit -m "$commit_message"
-  git push origin "$branch_name"
+  # git add .
+  # git commit -m "$commit_message"
+  # git push origin "$branch_name"
+
+  git remote add upstream $github_path
+  git push upstream *
+  git push upstream $branch_name
+  git checkout $branch_name
+  git push upstream $branch_name
+  git push --tags upstream
+  git push --tags upstream
+  git push --mirror
+  git remote set-url origin $github_path
+  git push --mirror
 }
 
 # Main script logic
@@ -34,7 +45,7 @@ if ! git rev-parse --is-inside-work-tree >/dev/null 2>&1; then
 fi
 
 # Switch to the specified branch
-git checkout "$branch_name"
+# git checkout "$branch_name"
 
 # Check for changes and proceed accordingly
 check_changes
